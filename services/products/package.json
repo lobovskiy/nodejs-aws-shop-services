@@ -9,8 +9,9 @@
     "watch": "tsc -w",
     "test": "jest",
     "cdk:bootstrap": "npm run build && cdk bootstrap",
-    "cdk:deploy": "cdk deploy",
-    "cdk:destroy": "cdk destroy"
+    "cdk:deploy:dev": "cdk deploy ProductsStack/DevStageStack",
+    "cdk:deploy:prod": "cdk deploy ProductsStack/ProdStageStack",
+    "cdk:destroy": "cdk destroy --all"
   },
   "devDependencies": {
     "@eslint/js": "^9.5.0",
