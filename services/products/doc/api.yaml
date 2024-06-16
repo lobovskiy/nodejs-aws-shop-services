@@ -1,0 +1,82 @@
+openapi: 3.0.3
+info:
+  title: Swagger AWS shop services - OpenAPI 3.0
+  description: |-
+    Products service API documentation for the frontend app [React-shop-cloudfront](https://github.com/lobovskiy/nodejs-aws-shop-react).
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: apiteam@swagger.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.11
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: https://od2fzpzaa0.execute-api.eu-central-1.amazonaws.com/dev/
+tags:
+  - name: products
+    description: Shop products
+paths:
+  /products:
+    get:
+      tags:
+        - products
+      summary: Get all products
+      description: Returns all products
+      operationId: getProductsList
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+        '500':
+          description: Internal server error
+  /products/{id}:
+    get:
+      tags:
+        - products
+      summary: Find product by ID
+      description: Returns a single product
+      operationId: getProductsById
+      parameters:
+        - name: id
+          in: path
+          description: ID of product to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Product not found
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+          example: '1'
+        title:
+          type: string
+          example: Shecter 6-string
+        description:
+          type: string
+          example: 6-string electric guitar
+        price:
+          type: number
+          example: 10.2
