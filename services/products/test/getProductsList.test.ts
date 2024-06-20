@@ -1,6 +1,6 @@
 import { handler } from '../src/handlers/getProductsList';
 import { responseHeaders } from '../src/handlers/consts';
-import { products } from '../src/data/products';
+import { products } from '../src/__mocks__/products';
 
 const isProduct = (obj: unknown) => {
   return (

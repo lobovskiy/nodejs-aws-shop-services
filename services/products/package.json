@@ -11,7 +11,8 @@
     "cdk:bootstrap": "npm run build && cdk bootstrap",
     "cdk:deploy:dev": "cdk deploy ProductsStack/DevStageStack",
     "cdk:deploy:prod": "cdk deploy ProductsStack/ProdStageStack",
-    "cdk:destroy": "cdk destroy --all"
+    "cdk:destroy": "cdk destroy --all",
+    "db:seed": "ts-node lib/seed-db.ts "
   },
   "devDependencies": {
     "@eslint/js": "^9.5.0",
@@ -30,6 +31,8 @@
     "typescript-eslint": "^7.13.0"
   },
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.600.0",
+    "@aws-sdk/util-dynamodb": "^3.602.0",
     "@types/aws-lambda": "^8.10.138",
     "aws-cdk-lib": "2.145.0",
     "constructs": "^10.0.0",
