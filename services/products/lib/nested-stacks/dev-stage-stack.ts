@@ -1,0 +1,29 @@
+import * as cdk from 'aws-cdk-lib';
+import { Construct } from 'constructs';
+import * as apigateway from 'aws-cdk-lib/aws-apigateway';
+
+interface DevStageStackProps extends cdk.StackProps {
+  api: apigateway.RestApi;
+}
+
+export class ProductsDevStageStack extends cdk.Stack {
+  constructor(scope: Construct, id: string, props: DevStageStackProps) {
+    super(scope, id, props);
+
+    const STAGE_NAME = 'dev';
+
+    const deployment = new apigateway.Deployment(this, 'DevDeployment', {
+      api: props.api,
+    });
+
+    const stage = new apigateway.Stage(this, 'DevStage', {
+      deployment,
+      stageName: STAGE_NAME,
+    });
+
+    new cdk.CfnOutput(this, 'DevApiUrl', {
+      value: stage.urlForPath(),
+      exportName: 'DevApiUrl',
+    });
+  }
+}
