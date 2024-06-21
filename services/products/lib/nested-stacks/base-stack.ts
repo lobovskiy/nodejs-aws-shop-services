@@ -4,7 +4,7 @@ import { Construct } from 'constructs';
 import { TableV2, AttributeType } from 'aws-cdk-lib/aws-dynamodb';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
-import { SERVICE_API_PATH } from '../../src/consts';
+import { DB_TABLE_NAMES, SERVICE_API_PATH } from '../../src/consts';
 
 export class ProductsBaseStack extends cdk.Stack {
   public readonly api: apigateway.RestApi;
@@ -16,11 +16,11 @@ export class ProductsBaseStack extends cdk.Stack {
 
     const productsTable = new TableV2(this, 'ProductTable', {
       partitionKey: { name: 'id', type: AttributeType.STRING },
-      tableName: 'products',
+      tableName: DB_TABLE_NAMES.Products,
     });
     const stocksTable = new TableV2(this, 'StocksTable', {
       partitionKey: { name: 'product_id', type: AttributeType.STRING },
-      tableName: 'stocks',
+      tableName: DB_TABLE_NAMES.Stocks,
     });
 
     const commonLambdaProps = {

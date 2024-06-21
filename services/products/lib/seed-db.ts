@@ -5,7 +5,7 @@ import {
 import { marshall } from '@aws-sdk/util-dynamodb';
 import { products } from '../src/__mocks__/products';
 import { stocks } from '../src/__mocks__/stocks';
-import { TABLE_NAMES } from '../src/consts';
+import { DB_TABLE_NAMES } from '../src/consts';
 
 const dbClient = new DynamoDBClient({
   region: process.env.CDK_DEFAULT_REGION,
@@ -35,8 +35,8 @@ const seedTable = async (tableName: string, items: object[]): Promise<void> => {
 };
 
 const seedDb = async () => {
-  await seedTable(TABLE_NAMES.Products, products);
-  await seedTable(TABLE_NAMES.Stocks, stocks);
+  await seedTable(DB_TABLE_NAMES.Products, products);
+  await seedTable(DB_TABLE_NAMES.Stocks, stocks);
 };
 
 seedDb();
