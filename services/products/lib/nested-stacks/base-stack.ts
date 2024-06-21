@@ -10,6 +10,7 @@ export class ProductsBaseStack extends cdk.Stack {
   public readonly api: apigateway.RestApi;
   public readonly getProductsList: NodejsFunction;
   public readonly getProductsById: NodejsFunction;
+  public readonly createProduct: NodejsFunction;
 
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
@@ -43,22 +44,40 @@ export class ProductsBaseStack extends cdk.Stack {
       functionName: 'get-products-by-id',
       entry: 'src/handlers/getProductsById.ts',
     });
+    this.createProduct = new NodejsFunction(this, 'LambdaCreateProduct', {
+      ...commonLambdaProps,
+      handler: 'handler',
+      functionName: 'create-product',
+      entry: 'src/handlers/createProduct.ts',
+    });
 
     productsTable.grantReadData(this.getProductsList);
     productsTable.grantReadData(this.getProductsById);
+    productsTable.grantWriteData(this.createProduct);
 
     stocksTable.grantReadData(this.getProductsList);
     stocksTable.grantReadData(this.getProductsById);
+    stocksTable.grantWriteData(this.createProduct);
 
     this.api = new apigateway.RestApi(this, 'ProductsRestApi', {
       restApiName: 'products-rest-api',
       deploy: false,
     });
 
-    const productsResource = this.api.root.addResource(SERVICE_API_PATH);
+    const productsResource = this.api.root.addResource(SERVICE_API_PATH, {
+      defaultCorsPreflightOptions: {
+        allowHeaders: apigateway.Cors.DEFAULT_HEADERS,
+        allowMethods: apigateway.Cors.ALL_METHODS,
+        allowOrigins: apigateway.Cors.ALL_ORIGINS,
+      },
+    });
     productsResource.addMethod(
       'GET',
       new apigateway.LambdaIntegration(this.getProductsList)
+    );
+    productsResource.addMethod(
+      'POST',
+      new apigateway.LambdaIntegration(this.createProduct)
     );
 
     const productByIdResource = productsResource.addResource('{id}');
