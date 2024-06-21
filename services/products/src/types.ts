@@ -9,3 +9,7 @@ export interface IStock {
   product_id: string;
   count: number;
 }
+
+export interface IAvailableProduct extends IProduct {
+  count: number;
+}
