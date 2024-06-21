@@ -11,7 +11,7 @@ const dbClient = new DynamoDBClient({
   region: process.env.CDK_DEFAULT_REGION,
 });
 
-const generateBatch = <T extends object>(items: T[]) => {
+const createBatch = (items: object[]) => {
   return items.map((item) => ({
     PutRequest: {
       Item: marshall(item),
@@ -19,13 +19,10 @@ const generateBatch = <T extends object>(items: T[]) => {
   }));
 };
 
-const seedTable = async <T extends object>(
-  tableName: string,
-  items: T[]
-): Promise<void> => {
+const seedTable = async (tableName: string, items: object[]): Promise<void> => {
   const command = new BatchWriteItemCommand({
     RequestItems: {
-      [tableName]: generateBatch(items),
+      [tableName]: createBatch(items),
     },
   });
 
