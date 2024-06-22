@@ -53,7 +53,7 @@ export const handler = async (
       };
 
       return {
-        statusCode: 200,
+        statusCode: 201,
         headers: responseHeaders,
         body: JSON.stringify(availableProduct),
       };

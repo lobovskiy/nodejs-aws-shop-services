@@ -28,7 +28,7 @@ describe('createProduct handler', () => {
     process.env = PREV_ENV;
   });
 
-  it('should return created available product with status code 200 when product data received is correct', async () => {
+  it('should return created available product with status code 201 when product data received is correct', async () => {
     const productDataMock: Omit<IAvailableProduct, 'id'> = {
       title: 'Test product',
       description: 'Test description',
@@ -41,7 +41,7 @@ describe('createProduct handler', () => {
     );
 
     expect(transactWriteItemsMock).toHaveBeenCalledTimes(1);
-    expect(result.statusCode).toEqual(200);
+    expect(result.statusCode).toEqual(201);
     expect(result.headers).toEqual(responseHeaders);
 
     const body = JSON.parse(result.body);
