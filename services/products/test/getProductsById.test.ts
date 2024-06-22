@@ -2,14 +2,15 @@ import {
   APIGatewayEventRequestContextWithAuthorizer,
   APIGatewayProxyEvent,
 } from 'aws-lambda';
+import { marshall } from '@aws-sdk/util-dynamodb';
 
 import * as dbService from '../src/database/service';
 import { handler } from '../src/handlers/getProductsById';
 import { responseHeaders } from '../src/handlers/consts';
+import { setTestEnv } from './utils';
 import { DB_TABLE_NAMES } from '../src/consts';
 import { products as productsMock } from '../src/__mocks__/products';
 import { stocks as stocksMock } from '../src/__mocks__/stocks';
-import { marshall } from '@aws-sdk/util-dynamodb';
 import { IProduct, IStock } from '../src/types';
 
 const createMockApiGatewayProxyEvent = (id?: string): APIGatewayProxyEvent => ({
@@ -43,9 +44,7 @@ describe('getProductsById handler', () => {
   beforeEach(() => {
     jest.resetModules();
     process.env = { ...PREV_ENV };
-
-    process.env.PRODUCTS_TABLE_NAME = DB_TABLE_NAMES.Products;
-    process.env.STOCKS_TABLE_NAME = DB_TABLE_NAMES.Stocks;
+    setTestEnv();
 
     queryTableItemByKeyMock.mockImplementation(
       (keyName: string, keyValue: string, tableName: string) => {

@@ -1,40 +1,12 @@
-import {
-  APIGatewayEventRequestContextWithAuthorizer,
-  APIGatewayProxyEvent,
-} from 'aws-lambda';
-
 import * as dbService from '../src/database/service';
 import { handler } from '../src/handlers/createProduct';
 import { responseHeaders } from '../src/handlers/consts';
-import { DB_TABLE_NAMES } from '../src/consts';
+import {
+  createMockApiGatewayProxyEvent,
+  isAvailableProduct,
+  setTestEnv,
+} from './utils';
 import { IAvailableProduct } from '../src/types';
-
-const createMockApiGatewayProxyEvent = (
-  body: string | null = null
-): APIGatewayProxyEvent => ({
-  body,
-  headers: {},
-  multiValueHeaders: {},
-  httpMethod: 'GET',
-  isBase64Encoded: false,
-  path: `/products`,
-  pathParameters: {},
-  queryStringParameters: null,
-  multiValueQueryStringParameters: null,
-  stageVariables: null,
-  requestContext: {} as APIGatewayEventRequestContextWithAuthorizer<object>,
-  resource: '',
-});
-
-const isAvailableProduct = (obj: unknown) => {
-  return (
-    Object.prototype.hasOwnProperty.call(obj, 'id') &&
-    Object.prototype.hasOwnProperty.call(obj, 'title') &&
-    Object.prototype.hasOwnProperty.call(obj, 'description') &&
-    Object.prototype.hasOwnProperty.call(obj, 'price') &&
-    Object.prototype.hasOwnProperty.call(obj, 'count')
-  );
-};
 
 describe('getProductsById handler', () => {
   const PREV_ENV = process.env;
@@ -43,9 +15,7 @@ describe('getProductsById handler', () => {
   beforeEach(() => {
     jest.resetModules();
     process.env = { ...PREV_ENV };
-
-    process.env.PRODUCTS_TABLE_NAME = DB_TABLE_NAMES.Products;
-    process.env.STOCKS_TABLE_NAME = DB_TABLE_NAMES.Stocks;
+    setTestEnv();
 
     transactWriteItemsMock.mockImplementation(() => Promise.resolve());
   });
@@ -67,7 +37,7 @@ describe('getProductsById handler', () => {
     };
 
     const result = await handler(
-      createMockApiGatewayProxyEvent(JSON.stringify(productDataMock))
+      createMockApiGatewayProxyEvent(null, JSON.stringify(productDataMock))
     );
 
     expect(transactWriteItemsMock).toHaveBeenCalledTimes(1);
@@ -89,7 +59,7 @@ describe('getProductsById handler', () => {
     };
 
     const result = await handler(
-      createMockApiGatewayProxyEvent(JSON.stringify(productDataMock))
+      createMockApiGatewayProxyEvent(null, JSON.stringify(productDataMock))
     );
 
     expect(transactWriteItemsMock).toHaveBeenCalledTimes(0);
@@ -125,7 +95,7 @@ describe('getProductsById handler', () => {
     };
 
     const result = await handler(
-      createMockApiGatewayProxyEvent(JSON.stringify(productDataMock))
+      createMockApiGatewayProxyEvent(null, JSON.stringify(productDataMock))
     );
 
     expect(transactWriteItemsMock).toHaveBeenCalledTimes(1);

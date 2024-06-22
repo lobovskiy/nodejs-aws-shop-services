@@ -1,44 +1,19 @@
-import {
-  APIGatewayEventRequestContextWithAuthorizer,
-  APIGatewayProxyEvent,
-} from 'aws-lambda';
-import { marshall } from '@aws-sdk/util-dynamodb';
-
 import * as dbService from '../src/database/service';
 import { handler } from '../src/handlers/getProductsList';
 import { responseHeaders } from '../src/handlers/consts';
+import {
+  createMockApiGatewayProxyEvent,
+  isAvailableProduct,
+  marshallArray,
+  setTestEnv,
+} from './utils';
 import { DB_TABLE_NAMES } from '../src/consts';
 import { IAvailableProduct } from '../src/types';
 import { products as productsMock } from '../src/__mocks__/products';
 import { stocks as stocksMock } from '../src/__mocks__/stocks';
 
-const isAvailableProduct = (obj: unknown) => {
-  return (
-    Object.prototype.hasOwnProperty.call(obj, 'id') &&
-    Object.prototype.hasOwnProperty.call(obj, 'title') &&
-    Object.prototype.hasOwnProperty.call(obj, 'description') &&
-    Object.prototype.hasOwnProperty.call(obj, 'price') &&
-    Object.prototype.hasOwnProperty.call(obj, 'count')
-  );
-};
-
-const mockApiGatewayProxyEvent: APIGatewayProxyEvent = {
-  body: null,
-  headers: {},
-  multiValueHeaders: {},
-  httpMethod: 'GET',
-  isBase64Encoded: false,
-  path: '',
-  pathParameters: {},
-  queryStringParameters: null,
-  multiValueQueryStringParameters: null,
-  stageVariables: null,
-  requestContext: {} as APIGatewayEventRequestContextWithAuthorizer<object>,
-  resource: '',
-};
-
-const productsTableItemsMock = productsMock.map((product) => marshall(product));
-const stocksTableItemsMock = stocksMock.map((stock) => marshall(stock));
+const productsTableItemsMock = marshallArray(productsMock);
+const stocksTableItemsMock = marshallArray(stocksMock);
 
 describe('getProductsList handler', () => {
   const PREV_ENV = process.env;
@@ -47,9 +22,7 @@ describe('getProductsList handler', () => {
   beforeEach(() => {
     jest.resetModules();
     process.env = { ...PREV_ENV };
-
-    process.env.PRODUCTS_TABLE_NAME = DB_TABLE_NAMES.Products;
-    process.env.STOCKS_TABLE_NAME = DB_TABLE_NAMES.Stocks;
+    setTestEnv();
 
     scanTableMock.mockImplementation((tableName: string) => {
       if (tableName === DB_TABLE_NAMES.Products) {
@@ -73,7 +46,7 @@ describe('getProductsList handler', () => {
   });
 
   it('should return list of products with status code 200', async () => {
-    const result = await handler(mockApiGatewayProxyEvent);
+    const result = await handler(createMockApiGatewayProxyEvent());
 
     expect(scanTableMock).toHaveBeenCalledTimes(2);
     expect(result.statusCode).toEqual(200);
@@ -94,7 +67,7 @@ describe('getProductsList handler', () => {
       return Promise.resolve([]);
     });
 
-    const result = await handler(mockApiGatewayProxyEvent);
+    const result = await handler(createMockApiGatewayProxyEvent());
 
     expect(scanTableMock).toHaveBeenCalledTimes(2);
     expect(result.statusCode).toEqual(200);
@@ -112,7 +85,7 @@ describe('getProductsList handler', () => {
       throw error;
     });
 
-    const result = await handler(mockApiGatewayProxyEvent);
+    const result = await handler(createMockApiGatewayProxyEvent());
 
     expect(scanTableMock).toHaveBeenCalledTimes(1);
     expect(result.statusCode).toEqual(500);
