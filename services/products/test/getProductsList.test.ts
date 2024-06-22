@@ -9,8 +9,8 @@ import {
 } from './utils';
 import { DB_TABLE_NAMES } from '../src/consts';
 import { IAvailableProduct } from '../src/types';
-import { products as productsMock } from '../src/__mocks__/products';
-import { stocks as stocksMock } from '../src/__mocks__/stocks';
+import { products as productsMock } from '../__mocks__/products';
+import { stocks as stocksMock } from '../__mocks__/stocks';
 
 const productsTableItemsMock = marshallArray(productsMock);
 const stocksTableItemsMock = marshallArray(stocksMock);

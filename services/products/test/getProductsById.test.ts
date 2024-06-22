@@ -9,8 +9,8 @@ import { handler } from '../src/handlers/getProductsById';
 import { responseHeaders } from '../src/handlers/consts';
 import { setTestEnv } from './utils';
 import { DB_TABLE_NAMES } from '../src/consts';
-import { products as productsMock } from '../src/__mocks__/products';
-import { stocks as stocksMock } from '../src/__mocks__/stocks';
+import { products as productsMock } from '../__mocks__/products';
+import { stocks as stocksMock } from '../__mocks__/stocks';
 import { IProduct, IStock } from '../src/types';
 
 const createMockApiGatewayProxyEvent = (id?: string): APIGatewayProxyEvent => ({

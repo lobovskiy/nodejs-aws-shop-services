@@ -1,4 +1,4 @@
-import { IStock } from '../types';
+import { IStock } from '../src/types';
 
 export const stocks: IStock[] = [
   { product_id: '1', count: 2 },
