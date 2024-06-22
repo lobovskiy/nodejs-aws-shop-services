@@ -2,6 +2,12 @@
 
 This is backend services for nodejs-aws mentoring program.
 
+## Prerequisites
+
+- Git - [Download & Install Git](https://git-scm.com/downloads).
+- Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager.
+- Docker - [Download & Install Docker](https://docs.docker.com/engine/install/).
+
 ## Documentation
 
 Product Service API: [Swagger doc](./services/products/doc/api.yaml)
