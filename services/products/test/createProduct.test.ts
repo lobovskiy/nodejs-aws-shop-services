@@ -8,7 +8,7 @@ import {
 } from './utils';
 import { IAvailableProduct } from '../src/types';
 
-describe('getProductsById handler', () => {
+describe('createProduct handler', () => {
   const PREV_ENV = process.env;
   const transactWriteItemsMock = jest.spyOn(dbService, 'transactWriteItems');
 
