@@ -3,8 +3,8 @@ import {
   BatchWriteItemCommand,
 } from '@aws-sdk/client-dynamodb';
 import { marshall } from '@aws-sdk/util-dynamodb';
-import { products } from '../src/__mocks__/products';
-import { stocks } from '../src/__mocks__/stocks';
+import { products } from '../__mocks__/products';
+import { stocks } from '../__mocks__/stocks';
 import { DB_TABLE_NAMES } from '../src/consts';
 
 const dbClient = new DynamoDBClient({
