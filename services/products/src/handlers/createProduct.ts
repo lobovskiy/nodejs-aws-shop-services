@@ -5,7 +5,7 @@ import { randomUUID } from 'node:crypto';
 import { transactWriteItems } from '../database/service';
 import { isJsonString } from '../utils';
 import { responseHeaders } from './consts';
-import { productSchema } from '../schema';
+import { productSchema } from '../schemas';
 import { IAvailableProduct } from '../types';
 
 export const handler = async (
