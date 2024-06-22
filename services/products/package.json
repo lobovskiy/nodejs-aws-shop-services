@@ -7,6 +7,7 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
+    "lint": "npx eslint .",
     "test": "jest",
     "cdk:bootstrap": "npm run build && cdk bootstrap",
     "cdk:deploy:dev": "cdk deploy ProductsStack/DevStageStack",
