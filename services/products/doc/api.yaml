@@ -37,6 +37,43 @@ paths:
                   $ref: '#/components/schemas/Product'
         '500':
           description: Internal server error
+    post:
+      tags:
+        - products
+      summary: Create product
+      description: Create a new product
+      operationId: createProduct
+      requestBody:
+        description: Creating product data
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: Shecter 6-string
+                description:
+                  type: string
+                  example: 6-string electric guitar
+                price:
+                  type: number
+                  example: 10
+                count:
+                  type: number
+                  example: 2
+      responses:
+        '201':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Invalid creating product data
+        '500':
+          description: Internal Server Error, default server error code
   /products/{id}:
     get:
       tags:
@@ -63,6 +100,8 @@ paths:
           description: Invalid ID supplied
         '404':
           description: Product not found
+        '500':
+          description: Internal Server Error, default server error code
 components:
   schemas:
     Product:
@@ -70,7 +109,7 @@ components:
       properties:
         id:
           type: string
-          example: '1'
+          example: 'uuid'
         title:
           type: string
           example: Shecter 6-string
@@ -79,4 +118,7 @@ components:
           example: 6-string electric guitar
         price:
           type: number
-          example: 10.2
+          example: 10
+        count:
+          type: integer
+          example: 2
