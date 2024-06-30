@@ -60,10 +60,6 @@ export const handler = async (
 
     console.error('Error occurred: ', error.message);
 
-    return {
-      statusCode: 500,
-      headers: responseHeaders,
-      body: JSON.stringify({ message: 'Internal server error' }),
-    };
+    throw error;
   }
 };

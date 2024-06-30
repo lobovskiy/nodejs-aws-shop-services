@@ -6,7 +6,7 @@ describe('importProductsFile handler', () => {
   const URL_MOCK = 'https://url-mock';
   const getS3UploadSignedUrlMock = jest.spyOn(utils, 'getS3UploadSignedUrl');
 
-  beforeAll(() => {
+  beforeEach(() => {
     getS3UploadSignedUrlMock.mockResolvedValue(URL_MOCK);
   });
 

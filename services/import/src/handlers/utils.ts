@@ -37,7 +37,7 @@ export async function getS3UploadSignedUrl(
 export async function getS3ObjectStreamingBlobPayload(
   bucketName: string,
   filePath: string
-) {
+): Promise<Readable> {
   const command = new GetObjectCommand({
     Bucket: bucketName,
     Key: filePath,
