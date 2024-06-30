@@ -12,9 +12,17 @@ This is backend services for nodejs-aws mentoring program.
 
 Product Service API: [Swagger doc](./services/products/doc/api.yaml)
 
+Import Service API: [Swagger doc](./services/import/doc/api.yaml)
+
+## Shop products data
+
+[products.csv](./services/import/src/data/products.csv)
+
 ## Deployment
 
 Product Service API: https://od2fzpzaa0.execute-api.eu-central-1.amazonaws.com/dev/products
+
+Import Service API: https://nsr51h1em5.execute-api.eu-central-1.amazonaws.com/dev/import
 
 ## Frontend Application
 
@@ -34,13 +42,13 @@ The project uses the following technologies:
 - [Prettier](https://prettier.io/) as a code formatting tool
 - [TypeScript](https://www.typescriptlang.org/) as a type checking tool
 
-## Available Scripts for Products Service in `/services/products`
+## Available Scripts for Products Service in `/services/products` and Import Service in `/services/import`
 
 ### `build`
 
 Builds the project for production in `dist` folder.
 
-### `build`
+### `watch`
 
 Runs the project in watch mode.
 
@@ -48,9 +56,9 @@ Runs the project in watch mode.
 
 Runs tests in console.
 
-### `lint`, `prettier`
+### `lint`
 
-Runs linting and formatting for all files in `src` folder.
+Runs linting for all files in `src` folder.
 
 ### `cdk:bootstrap`
 
@@ -64,7 +72,7 @@ Deploy app stack on the `dev` stage in the current AWS account and region
 
 Deploy app stack on the `prod` stage in the current AWS account and region
 
-### `db:seed`
+### `db:seed` (available for Products Service)
 
 Seeds app database tables with mock data from `/services/products/__mocks__`
 
