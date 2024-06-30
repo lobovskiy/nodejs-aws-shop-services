@@ -3,11 +3,9 @@ import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 import { importUrlSchema } from '../schemas';
-import {
-  UPLOADED_IMPORT_FOLDER,
-  URL_EXPIRATION_TIME_IN_SECONDS,
-} from '../consts';
-import { responseHeaders, s3Client } from './consts';
+import { IMPORT_FOLDERS, URL_EXPIRATION_TIME_IN_SECONDS } from '../consts';
+import { s3Client } from './utils';
+import { responseHeaders } from './consts';
 
 export const handler = async (
   event: APIGatewayProxyEvent
@@ -36,7 +34,7 @@ export const handler = async (
 
     try {
       const bucketName = process.env.IMPORT_BUCKET_NAME!;
-      const objectKey = `${UPLOADED_IMPORT_FOLDER}/${fileName}`;
+      const objectKey = `${IMPORT_FOLDERS.Uploaded}/${fileName}`;
       const command = new PutObjectCommand({
         Bucket: bucketName,
         Key: objectKey,
@@ -54,7 +52,7 @@ export const handler = async (
     } catch (err: unknown) {
       const error = err as Error;
 
-      console.error('Error occurred:', error.message);
+      console.error('Error occurred: ', error.message);
 
       return {
         statusCode: 500,
