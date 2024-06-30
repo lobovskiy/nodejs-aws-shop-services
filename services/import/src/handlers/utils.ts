@@ -2,17 +2,37 @@ import {
   CopyObjectCommand,
   DeleteObjectCommand,
   GetObjectCommand,
+  PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Readable } from 'stream';
 import csv from 'csv-parser';
 import * as yup from 'yup';
+
 import { productSchema } from '../../src/schemas';
 import { ICsvRow } from '../types';
+import { URL_EXPIRATION_TIME_IN_SECONDS } from '../consts';
 
 export const s3Client = new S3Client({
   region: process.env.CDK_DEFAULT_REGION,
 });
+
+export async function getS3UploadSignedUrl(
+  bucketName: string,
+  objectKey: string
+) {
+  const command = new PutObjectCommand({
+    Bucket: bucketName,
+    Key: objectKey,
+    ContentType: 'text/csv',
+  });
+  const signedUrl = await getSignedUrl(s3Client, command, {
+    expiresIn: URL_EXPIRATION_TIME_IN_SECONDS,
+  });
+
+  return signedUrl;
+}
 
 export async function getS3ObjectStreamingBlobPayload(
   bucketName: string,

@@ -1,10 +1,8 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { PutObjectCommand } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 import { importUrlSchema } from '../schemas';
-import { IMPORT_FOLDERS, URL_EXPIRATION_TIME_IN_SECONDS } from '../consts';
-import { s3Client } from './utils';
+import { IMPORT_FOLDERS } from '../consts';
+import { getS3UploadSignedUrl } from './utils';
 import { responseHeaders } from './consts';
 
 export const handler = async (
@@ -35,14 +33,7 @@ export const handler = async (
     try {
       const bucketName = process.env.IMPORT_BUCKET_NAME!;
       const objectKey = `${IMPORT_FOLDERS.Uploaded}/${fileName}`;
-      const command = new PutObjectCommand({
-        Bucket: bucketName,
-        Key: objectKey,
-        ContentType: 'text/csv',
-      });
-      const url = await getSignedUrl(s3Client, command, {
-        expiresIn: URL_EXPIRATION_TIME_IN_SECONDS,
-      });
+      const url = await getS3UploadSignedUrl(bucketName, objectKey);
 
       return {
         statusCode: 200,
