@@ -1,7 +1,6 @@
 import { APIGatewayProxyResult, S3Event } from 'aws-lambda';
 
 import { IMPORT_FOLDERS } from '../consts';
-import { responseHeaders } from './consts';
 import {
   getS3ObjectStreamingBlobPayload,
   moveS3Object,
