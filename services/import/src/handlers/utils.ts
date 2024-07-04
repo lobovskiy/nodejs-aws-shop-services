@@ -96,11 +96,13 @@ export async function parseCsvFile(stream: Readable) {
       const error = err as Error;
 
       console.error(
-        'Error while sending query message of during parsing csv file: ',
+        'Error while sending query message during parsing csv file: ',
         error.message
       );
     }
   }
+
+  console.log('File parsing process finished');
 }
 
 export async function moveS3Object(
