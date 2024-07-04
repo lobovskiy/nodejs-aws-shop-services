@@ -157,5 +157,9 @@ export class ProductsBaseStack extends cdk.Stack {
         batchSize: 5,
       })
     );
+
+    new cdk.CfnOutput(this, 'CreateProductQueueArn', {
+      value: createProductQueue.queueArn,
+    });
   }
 }
