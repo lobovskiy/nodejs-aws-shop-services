@@ -1,6 +1,8 @@
 import {
   APIGatewayEventRequestContextWithAuthorizer,
   APIGatewayProxyEvent,
+  SQSRecord,
+  SQSRecordAttributes,
 } from 'aws-lambda';
 import { marshall } from '@aws-sdk/util-dynamodb';
 
@@ -31,6 +33,23 @@ export function createMockApiGatewayProxyEvent(
     stageVariables: null,
     requestContext: {} as APIGatewayEventRequestContextWithAuthorizer<object>,
     resource: '',
+  };
+}
+
+export function createSqsRecordMock(
+  messageId: string,
+  body: object
+): SQSRecord {
+  return {
+    messageId,
+    receiptHandle: `${messageId}ReceiptHandleMock`,
+    body: JSON.stringify(body),
+    attributes: {} as SQSRecordAttributes,
+    messageAttributes: {},
+    md5OfBody: 'md5OfBodyMock',
+    eventSource: 'event-source-mock',
+    eventSourceARN: 'event-source-arn-mock',
+    awsRegion: 'region-mock',
   };
 }
 

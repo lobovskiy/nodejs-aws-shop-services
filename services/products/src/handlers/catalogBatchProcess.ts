@@ -48,7 +48,7 @@ export const handler = async (event: SQSEvent) => {
       try {
         const availableProduct = await createAvailableProduct(product, stock);
 
-        const snsResult = await publishToSnsTopic(
+        const publishingToSnsResult = await publishToSnsTopic(
           PRODUCT_TOPIC_ARN!,
           'Product added to AWS Shop catalog',
           JSON.stringify(availableProduct),
@@ -60,7 +60,10 @@ export const handler = async (event: SQSEvent) => {
           }
         );
 
-        console.log('snsResult', snsResult);
+        console.log(
+          'Product created and published to SNS: ',
+          publishingToSnsResult
+        );
       } catch (err: unknown) {
         const error = err as Error;
 
