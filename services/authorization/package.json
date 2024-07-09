@@ -10,6 +10,7 @@
     "lint": "npx eslint .",
     "test": "jest",
     "cdk:bootstrap": "npm run build && cdk bootstrap",
+    "cdk:deploy": "cdk deploy",
     "cdk:destroy": "cdk destroy --all"
   },
   "devDependencies": {
@@ -29,6 +30,7 @@
     "typescript-eslint": "^7.13.0"
   },
   "dependencies": {
+    "@types/aws-lambda": "^8.10.140",
     "aws-cdk-lib": "2.148.0",
     "constructs": "^10.0.0",
     "dotenv": "^16.4.5",
