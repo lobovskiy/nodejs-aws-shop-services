@@ -1,4 +1,4 @@
-import * as dbService from '../src/database/service';
+import * as utils from '../src/handlers/utils';
 import { handler } from '../src/handlers/createProduct';
 import { responseHeaders } from '../src/handlers/consts';
 import {
@@ -6,22 +6,34 @@ import {
   isAvailableProduct,
   setTestEnv,
 } from './utils';
-import { IAvailableProduct } from '../src/types';
+import { IAvailableProduct, IProduct, IStock } from '../src/types';
 
 describe('createProduct handler', () => {
   const PREV_ENV = process.env;
-  const transactWriteItemsMock = jest.spyOn(dbService, 'transactWriteItems');
+  const createAvailableProductMock = jest.spyOn(
+    utils,
+    'createAvailableProduct'
+  );
 
   beforeEach(() => {
     jest.resetModules();
     process.env = { ...PREV_ENV };
     setTestEnv();
 
-    transactWriteItemsMock.mockImplementation(() => Promise.resolve());
+    createAvailableProductMock.mockImplementation(
+      (product: IProduct, stock: IStock) =>
+        Promise.resolve({
+          id: 'idMock',
+          title: product.title,
+          description: product.description,
+          price: product.price,
+          count: stock.count,
+        })
+    );
   });
 
   afterEach(() => {
-    transactWriteItemsMock.mockClear();
+    jest.clearAllMocks();
   });
 
   afterAll(() => {
@@ -40,7 +52,7 @@ describe('createProduct handler', () => {
       createMockApiGatewayProxyEvent(null, JSON.stringify(productDataMock))
     );
 
-    expect(transactWriteItemsMock).toHaveBeenCalledTimes(1);
+    expect(createAvailableProductMock).toHaveBeenCalledTimes(1);
     expect(result.statusCode).toEqual(201);
     expect(result.headers).toEqual(responseHeaders);
 
@@ -62,7 +74,7 @@ describe('createProduct handler', () => {
       createMockApiGatewayProxyEvent(null, JSON.stringify(productDataMock))
     );
 
-    expect(transactWriteItemsMock).toHaveBeenCalledTimes(0);
+    expect(createAvailableProductMock).toHaveBeenCalledTimes(0);
     expect(result.statusCode).toEqual(400);
     expect(result.headers).toEqual(responseHeaders);
 
@@ -73,7 +85,7 @@ describe('createProduct handler', () => {
   it('should return 400 status code if there is no product data received', async () => {
     const result = await handler(createMockApiGatewayProxyEvent());
 
-    expect(transactWriteItemsMock).toHaveBeenCalledTimes(0);
+    expect(createAvailableProductMock).toHaveBeenCalledTimes(0);
     expect(result.statusCode).toEqual(400);
     expect(result.headers).toEqual(responseHeaders);
 
@@ -83,7 +95,7 @@ describe('createProduct handler', () => {
 
   it('should return 500 status code with error message on internal server error', async () => {
     const error = new Error('Test error');
-    transactWriteItemsMock.mockImplementation(() => {
+    createAvailableProductMock.mockImplementation(() => {
       throw error;
     });
 
@@ -98,7 +110,7 @@ describe('createProduct handler', () => {
       createMockApiGatewayProxyEvent(null, JSON.stringify(productDataMock))
     );
 
-    expect(transactWriteItemsMock).toHaveBeenCalledTimes(1);
+    expect(createAvailableProductMock).toHaveBeenCalledTimes(1);
     expect(result.statusCode).toEqual(500);
     expect(result.headers).toEqual(responseHeaders);
 

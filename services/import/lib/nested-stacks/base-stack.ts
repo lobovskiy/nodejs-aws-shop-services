@@ -4,6 +4,7 @@ import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3Notifications from 'aws-cdk-lib/aws-s3-notifications';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as sqs from 'aws-cdk-lib/aws-sqs';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 
 import { IMPORT_API, IMPORT_FOLDERS } from '../../src/consts';
@@ -14,6 +15,12 @@ export class ImportBaseStack extends cdk.Stack {
 
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
+
+    const createProductQueue = sqs.Queue.fromQueueArn(
+      this,
+      'CreateProductQueue',
+      process.env.CREATE_PRODUCT_QUEUE_ARN!
+    );
 
     const bucket = new s3.Bucket(this, 'NodejsAwsShopImportService', {
       bucketName: 'lobovskiy-nodejs-aws-shop-import-service',
@@ -39,6 +46,7 @@ export class ImportBaseStack extends cdk.Stack {
       runtime: lambda.Runtime.NODEJS_20_X,
       environment: {
         IMPORT_BUCKET_NAME: bucket.bucketName,
+        PRODUCTS_QUEUE_URL: createProductQueue.queueUrl,
       },
     };
 
@@ -71,9 +79,10 @@ export class ImportBaseStack extends cdk.Stack {
     );
 
     bucket.grantReadWrite(this.importProductsFile);
-
     bucket.grantReadWrite(importFileParser);
     bucket.grantDelete(importFileParser);
+
+    createProductQueue.grantSendMessages(importFileParser);
 
     this.api = new apigateway.RestApi(this, 'ImportRestApi', {
       restApiName: 'import-rest-api',

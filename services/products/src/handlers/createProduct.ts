@@ -1,12 +1,10 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { marshall } from '@aws-sdk/util-dynamodb';
 import { randomUUID } from 'node:crypto';
 
-import { transactWriteItems } from '../database/service';
 import { isJsonString } from '../utils';
 import { responseHeaders } from './consts';
 import { productSchema } from '../schemas';
-import { IAvailableProduct } from '../types';
+import { createAvailableProduct } from './utils';
 
 export const handler = async (
   event: APIGatewayProxyEvent
@@ -31,26 +29,13 @@ export const handler = async (
       body,
       { strict: true }
     );
-
     const productId = randomUUID();
-    const product = { id: productId, title, description, price };
 
-    const productItem = marshall(product);
-    const stockItem = marshall({
-      product_id: productId,
-      count,
-    });
+    const product = { id: productId, title, description, price };
+    const stock = { product_id: productId, count };
 
     try {
-      await transactWriteItems([
-        [productItem, process.env.PRODUCTS_TABLE_NAME!],
-        [stockItem, process.env.STOCKS_TABLE_NAME!],
-      ]);
-
-      const availableProduct: IAvailableProduct = {
-        ...product,
-        count,
-      };
+      const availableProduct = await createAvailableProduct(product, stock);
 
       return {
         statusCode: 201,
