@@ -114,7 +114,13 @@ export class ImportBaseStack extends cdk.Stack {
       deploy: false,
     });
 
-    const importResource = this.api.root.addResource(IMPORT_API);
+    const importResource = this.api.root.addResource(IMPORT_API, {
+      defaultCorsPreflightOptions: {
+        allowHeaders: apigateway.Cors.DEFAULT_HEADERS,
+        allowMethods: apigateway.Cors.ALL_METHODS,
+        allowOrigins: apigateway.Cors.ALL_ORIGINS,
+      },
+    });
     importResource.addMethod(
       'GET',
       new apigateway.LambdaIntegration(this.importProductsFile),
