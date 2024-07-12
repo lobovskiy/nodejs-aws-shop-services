@@ -14,6 +14,8 @@ Product Service API: [Swagger doc](./services/products/doc/api.yaml)
 
 Import Service API: [Swagger doc](./services/import/doc/api.yaml)
 
+_**Attention!** To deploy Import Service you have to rename `.env.example` file to `.env` and write ARN of your Create Product Queue (which is shown by cdk output after deploying Products Service) to CREATE_PRODUCT_QUEUE_ARN env value_
+
 ## Shop products data
 
 [products.csv](./services/import/src/data/products.csv)

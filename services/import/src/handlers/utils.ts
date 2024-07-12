@@ -1,3 +1,5 @@
+import { randomUUID } from 'node:crypto';
+import { Readable } from 'stream';
 import {
   CopyObjectCommand,
   DeleteObjectCommand,
@@ -5,16 +7,18 @@ import {
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
+import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { Readable } from 'stream';
 import csv from 'csv-parser';
-import * as yup from 'yup';
 
 import { productSchema } from '../../src/schemas';
-import { ICsvRow } from '../types';
 import { URL_EXPIRATION_TIME_IN_SECONDS } from '../consts';
 
 export const s3Client = new S3Client({
+  region: process.env.CDK_DEFAULT_REGION,
+});
+
+const sqsClient = new SQSClient({
   region: process.env.CDK_DEFAULT_REGION,
 });
 
@@ -68,51 +72,37 @@ export async function getS3ObjectStreamingBlobPayload(
 }
 
 export async function parseCsvFile(stream: Readable) {
-  return new Promise<void>((resolve, reject) => {
-    const csvRows: ICsvRow[] = [];
-    const csvParser = stream.pipe(csv());
+  const csvStream = stream.pipe(csv());
 
-    csvParser
-      .on('data', (data: ICsvRow) => {
-        console.log('csv row: ', data);
-        csvRows.push(data);
-      })
-      .on('end', async () => {
-        console.log('File parsing completed');
+  for await (const chunk of csvStream) {
+    try {
+      productSchema.validateSync(chunk);
+    } catch (error) {
+      console.error('File validation error: ', error);
 
-        const rowValidationErrors: string[] = [];
+      continue;
+    }
 
-        await Promise.all(
-          csvRows.map((csvRow) =>
-            productSchema
-              .validate(csvRow, { abortEarly: false })
-              .catch((err) => {
-                const error = err as yup.ValidationError;
+    const command = new SendMessageCommand({
+      QueueUrl: process.env.PRODUCTS_QUEUE_URL,
+      MessageBody: JSON.stringify(chunk),
+      MessageGroupId: 'products',
+      MessageDeduplicationId: randomUUID(),
+    });
 
-                rowValidationErrors.push(error.errors.join(', '));
-              })
-          )
-        );
+    try {
+      await sqsClient.send(command);
+    } catch (err) {
+      const error = err as Error;
 
-        if (rowValidationErrors.length > 0) {
-          console.error(
-            'File validation error:',
-            rowValidationErrors.join('; ')
-          );
+      console.error(
+        'Error while sending query message during parsing csv file: ',
+        error.message
+      );
+    }
+  }
 
-          reject(new Error('Invalid csv data'));
-        }
-
-        resolve();
-      })
-      .on('error', (err: unknown) => {
-        const error = err as Error;
-
-        console.error('Error while parsing csv file: ', error.message);
-
-        reject(error);
-      });
-  });
+  console.log('File parsing process finished');
 }
 
 export async function moveS3Object(

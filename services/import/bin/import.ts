@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
+import 'dotenv/config';
+
 import { ImportStack } from '../lib/import-stack';
 
 const app = new cdk.App();
