@@ -31,7 +31,7 @@ export const handler = async (
       .split(':');
     const storedPassword = process.env[username];
 
-    if (storedPassword !== password) {
+    if (!storedPassword || storedPassword !== password) {
       return generatePolicy('user', 'Deny', methodArn);
     }
 
