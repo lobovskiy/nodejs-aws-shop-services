@@ -129,5 +129,12 @@ export class ImportBaseStack extends cdk.Stack {
         authorizationType: apigateway.AuthorizationType.CUSTOM,
       }
     );
+
+    this.api.addGatewayResponse('Default4xxResponse', {
+      type: apigateway.ResponseType.DEFAULT_4XX,
+      responseHeaders: {
+        'Access-Control-Allow-Origin': "'*'",
+      },
+    });
   }
 }
