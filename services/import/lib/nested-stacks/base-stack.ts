@@ -16,6 +16,24 @@ export class ImportBaseStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
+    const lambdaBasicAuthorizer = lambda.Function.fromFunctionAttributes(
+      this,
+      'LambdaBasicAuthorizer',
+      {
+        functionArn: process.env.LAMBDA_BASIC_AUTHORIZER_ARN!,
+        sameEnvironment: true,
+      }
+    );
+
+    const authorizer = new apigateway.TokenAuthorizer(
+      this,
+      'ImportServiceBasicAuthorizer',
+      {
+        handler: lambdaBasicAuthorizer,
+        resultsCacheTtl: cdk.Duration.seconds(0),
+      }
+    );
+
     const createProductQueue = sqs.Queue.fromQueueArn(
       this,
       'CreateProductQueue',
@@ -84,15 +102,39 @@ export class ImportBaseStack extends cdk.Stack {
 
     createProductQueue.grantSendMessages(importFileParser);
 
+    new lambda.CfnPermission(this, 'BasicAuthorizerPermission', {
+      action: 'lambda:InvokeFunction',
+      functionName: lambdaBasicAuthorizer.functionName,
+      principal: 'apigateway.amazonaws.com',
+      sourceAccount: this.account,
+    });
+
     this.api = new apigateway.RestApi(this, 'ImportRestApi', {
       restApiName: 'import-rest-api',
       deploy: false,
     });
 
-    const importResource = this.api.root.addResource(IMPORT_API);
+    const importResource = this.api.root.addResource(IMPORT_API, {
+      defaultCorsPreflightOptions: {
+        allowHeaders: apigateway.Cors.DEFAULT_HEADERS,
+        allowMethods: apigateway.Cors.ALL_METHODS,
+        allowOrigins: apigateway.Cors.ALL_ORIGINS,
+      },
+    });
     importResource.addMethod(
       'GET',
-      new apigateway.LambdaIntegration(this.importProductsFile)
+      new apigateway.LambdaIntegration(this.importProductsFile),
+      {
+        authorizer,
+        authorizationType: apigateway.AuthorizationType.CUSTOM,
+      }
     );
+
+    this.api.addGatewayResponse('Default4xxResponse', {
+      type: apigateway.ResponseType.DEFAULT_4XX,
+      responseHeaders: {
+        'Access-Control-Allow-Origin': "'*'",
+      },
+    });
   }
 }

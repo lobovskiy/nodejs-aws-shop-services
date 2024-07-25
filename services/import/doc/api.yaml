@@ -24,6 +24,8 @@ paths:
       tags:
         - import
       summary: Get signed url to import csv file
+      security:
+        - basicAuth: []
       description: Returns a signed url
       operationId: importProductsFile
       parameters:
@@ -49,3 +51,7 @@ components:
     SignedUrl:
       type: string
       description: Signed url to import csv file
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
