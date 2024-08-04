@@ -63,6 +63,7 @@ export function isAvailableProduct(obj: unknown): obj is IAvailableProduct {
     Object.prototype.hasOwnProperty.call(obj, 'title') &&
     Object.prototype.hasOwnProperty.call(obj, 'description') &&
     Object.prototype.hasOwnProperty.call(obj, 'price') &&
+    Object.prototype.hasOwnProperty.call(obj, 'image') &&
     Object.prototype.hasOwnProperty.call(obj, 'count')
   );
 }

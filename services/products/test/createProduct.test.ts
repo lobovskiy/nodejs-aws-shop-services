@@ -27,6 +27,7 @@ describe('createProduct handler', () => {
           title: product.title,
           description: product.description,
           price: product.price,
+          image: product.image,
           count: stock.count,
         })
     );
@@ -45,6 +46,7 @@ describe('createProduct handler', () => {
       title: 'Test product',
       description: 'Test description',
       price: 23,
+      image: 'https://test-image.url',
       count: 1,
     };
 
@@ -58,8 +60,10 @@ describe('createProduct handler', () => {
 
     const body = JSON.parse(result.body);
     expect(isAvailableProduct(body)).toEqual(true);
-    const { title, description, price, count } = body;
-    expect({ title, description, price, count }).toEqual(productDataMock);
+    const { title, description, price, image, count } = body;
+    expect({ title, description, price, image, count }).toEqual(
+      productDataMock
+    );
   });
 
   it('should return 400 status code if product data received is invalid', async () => {
@@ -67,6 +71,7 @@ describe('createProduct handler', () => {
       title: 'Test product',
       description: 'Test description',
       price: 'invalid price',
+      image: 'https://test-image.url',
       count: 1,
     };
 
@@ -103,6 +108,7 @@ describe('createProduct handler', () => {
       title: 'Test product',
       description: 'Test description',
       price: 23,
+      image: 'https://test-image.url',
       count: 1,
     };
 

@@ -20,12 +20,15 @@ describe('catalogBatchProcess handler', () => {
           'Electric guitar from the prestigious PE series, the flagship of Aria guitars',
         price: 23.3,
         count: 2,
+        image: 'https://ltm-music.ru/upload/images/pe-1500ri_sbr.jpg',
       }),
       createSqsRecordMock('messageIdMock2', {
         title: 'Schecter BlackJack SLS C-7 A Electric Guitar',
         description: '7-string electric guitar, active pickups',
         price: 77.8,
         count: 3,
+        image:
+          'https://ltm-music.ru/upload/images/blackjack_sls_c-7_active_crb_.jpg',
       }),
     ],
   };
@@ -39,6 +42,7 @@ describe('catalogBatchProcess handler', () => {
           description: product.description,
           price: product.price,
           count: stock.count,
+          image: product.image,
         })
     );
     publishToSnsTopicMock.mockResolvedValue({
@@ -54,7 +58,7 @@ describe('catalogBatchProcess handler', () => {
   it('should handle an SQS event, create available product and publish result to SNS', async () => {
     const result = await handler(sqsEventMock);
 
-    expect(result).resolves.toBeUndefined();
+    expect(result).toBeUndefined();
     expect(createAvailableProductMock).toHaveBeenCalledTimes(
       sqsEventMock.Records.length
     );
@@ -71,9 +75,11 @@ describe('catalogBatchProcess handler', () => {
 
     const result = await handler(sqsEventMock);
 
-    expect(result).rejects;
+    expect(result).toBeUndefined();
 
-    expect(createAvailableProductMock).toHaveBeenCalledTimes(1);
+    expect(createAvailableProductMock).toHaveBeenCalledTimes(
+      sqsEventMock.Records.length
+    );
     expect(publishToSnsTopicMock).not.toHaveBeenCalled();
   });
 });
