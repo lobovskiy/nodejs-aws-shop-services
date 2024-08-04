@@ -28,10 +28,8 @@ export const handler = async (event: SQSEvent) => {
 
     try {
       const recordBody = JSON.parse(bodyStringified);
-      const { title, description, price, count } = await productSchema.validate(
-        recordBody,
-        { abortEarly: false }
-      );
+      const { title, description, price, count, image } =
+        await productSchema.validate(recordBody, { abortEarly: false });
       const productId = randomUUID();
 
       const product: IProduct = {
@@ -39,6 +37,7 @@ export const handler = async (event: SQSEvent) => {
         title,
         description,
         price,
+        image,
       };
       const stock: IStock = {
         product_id: productId,

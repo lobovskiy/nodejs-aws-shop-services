@@ -2,9 +2,9 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { randomUUID } from 'node:crypto';
 
 import { isJsonString } from '../utils';
+import { createAvailableProduct } from './utils';
 import { responseHeaders } from './consts';
 import { productSchema } from '../schemas';
-import { createAvailableProduct } from './utils';
 
 export const handler = async (
   event: APIGatewayProxyEvent
@@ -25,13 +25,11 @@ export const handler = async (
 
   try {
     const body = JSON.parse(bodyStringified);
-    const { title, description, price, count } = await productSchema.validate(
-      body,
-      { strict: true }
-    );
+    const { title, description, price, count, image } =
+      await productSchema.validate(body, { strict: true });
     const productId = randomUUID();
 
-    const product = { id: productId, title, description, price };
+    const product = { id: productId, title, description, price, image };
     const stock = { product_id: productId, count };
 
     try {
