@@ -21,10 +21,7 @@ export class AppService {
     const { headers, method, body, originalUrl } = request;
 
     try {
-      const originalPath =
-        recipientServiceName === 'cart'
-          ? originalUrl.slice('/cart'.length)
-          : originalUrl;
+      const originalPath = originalUrl.slice(`/${recipientServiceName}`.length);
       const url = `${recipientUrl}${originalPath}`;
       console.log('url :>> ', url);
       const serviceRequestConfig: AxiosRequestConfig = {
