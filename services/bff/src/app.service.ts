@@ -4,7 +4,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { Request } from 'express';
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 
 @Injectable()
 export class AppService {
@@ -22,18 +22,25 @@ export class AppService {
 
     console.log('request :>> ', request);
 
-    const { method, body, originalUrl } = request;
+    const { headers, method, body, originalUrl } = request;
 
     try {
-      const response = await axios({
+      const serviceRequestConfig: AxiosRequestConfig = {
         url: `${recipientUrl}${originalUrl}`,
         method,
-        data: body,
-      });
+        headers: {},
+      };
 
-      console.log('response :>> ', response);
+      if (headers['authorization']) {
+        serviceRequestConfig.headers['Authorization'] =
+          headers['authorization'];
+      }
 
-      return response;
+      if (Object.keys(body).length) {
+        serviceRequestConfig.data = body;
+      }
+
+      return await axios.request(serviceRequestConfig);
     } catch (e) {
       console.log('e :>> ', e);
 
