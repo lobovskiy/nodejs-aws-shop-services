@@ -23,7 +23,7 @@ export class AppController {
     };
   }
 
-  @All('/:recipientServiceName')
+  @All(['/:recipientServiceName', '/:recipientServiceName/*'])
   async handleRequest(
     @Req() request: Request,
     @Res() response: Response,
