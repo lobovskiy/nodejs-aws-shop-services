@@ -14,19 +14,21 @@ export class AppService {
   ): Promise<AxiosResponse> {
     const recipientUrl = process.env[recipientServiceName];
 
-    console.log('recipientUrl :>> ', recipientUrl);
-
     if (!recipientUrl) {
       throw new BadGatewayException('Cannot process request');
     }
 
-    console.log('request :>> ', request);
-
     const { headers, method, body, originalUrl } = request;
 
     try {
+      const originalPath =
+        recipientServiceName === 'cart'
+          ? originalUrl.slice('/cart'.length)
+          : originalUrl;
+      const url = `${recipientUrl}${originalPath}`;
+      console.log('url :>> ', url);
       const serviceRequestConfig: AxiosRequestConfig = {
-        url: `${recipientUrl}${originalUrl}`,
+        url,
         method,
         headers: {},
       };
@@ -42,8 +44,6 @@ export class AppService {
 
       return await axios.request(serviceRequestConfig);
     } catch (e) {
-      console.log('e :>> ', e);
-
       if (e.response) {
         return e.response;
       }
