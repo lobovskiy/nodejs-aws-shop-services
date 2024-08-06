@@ -1,0 +1,22 @@
+# Dependencies is installed on the Setup stage
+/node_modules
+
+# App is built on the Build stage
+/dist
+
+# SQL scripts and tests aren't used in the app runtime
+**/**/*.spec.ts
+test
+
+# envs, readme and dev configs aren't used in the app runtime
+.env*
+README.md
+.gitignore
+.eslintrc.js
+.prettierrc
+Dockerfile
+.dockerignore
+.git
+
+# AWS Elastic Beanstalk config is only needed for cloud delivery
+.elasticbeanstalk/*

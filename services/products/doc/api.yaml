@@ -60,6 +60,9 @@ paths:
                 price:
                   type: number
                   example: 10
+                image:
+                  type: string
+                  example: https://image.url
                 count:
                   type: number
                   example: 2
@@ -105,6 +108,11 @@ paths:
 components:
   schemas:
     Product:
+      required:
+        - title
+        - description
+        - price
+        - count
       type: object
       properties:
         id:
@@ -119,6 +127,9 @@ components:
         price:
           type: number
           example: 10
+        image:
+          type: string
+          example: https://image.url
         count:
           type: integer
           example: 2
