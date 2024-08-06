@@ -5,6 +5,7 @@ import { isJsonString } from '../utils';
 import { createAvailableProduct } from './utils';
 import { responseHeaders } from './consts';
 import { productSchema } from '../schemas';
+import { IProduct, IStock } from '../types';
 
 export const handler = async (
   event: APIGatewayProxyEvent
@@ -29,8 +30,12 @@ export const handler = async (
       await productSchema.validate(body, { strict: true });
     const productId = randomUUID();
 
-    const product = { id: productId, title, description, price, image };
-    const stock = { product_id: productId, count };
+    const product: IProduct = { id: productId, title, description, price };
+    const stock: IStock = { product_id: productId, count };
+
+    if (image) {
+      product.image = image;
+    }
 
     try {
       const availableProduct = await createAvailableProduct(product, stock);
