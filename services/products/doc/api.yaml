@@ -60,6 +60,9 @@ paths:
                 price:
                   type: number
                   example: 10
+                image:
+                  type: string
+                  example: https://image.url
                 count:
                   type: number
                   example: 2
@@ -126,7 +129,7 @@ components:
           example: 10
         image:
           type: string
-          example: http://image.url
+          example: https://image.url
         count:
           type: integer
           example: 2
